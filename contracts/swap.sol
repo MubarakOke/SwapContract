@@ -30,11 +30,11 @@ contract Swap {
     function swapAforB(uint256 _amount ) external returns(bool){
         require(msg.sender != address(0));
 
-        uint256 _totalAmountTokenA= _amount + calculateCharges(_amount);
-
+        uint256 _amountPlusCharges= _amount + calculateCharges(_amount);
+        uint256 _amountToGet= 
 
         if (_amount >= 0) {revert ZERO_AMOUNT_DETECTED();}
-        if (IERC20(tokenAAddress).balanceOf(msg.sender)  < _totalAmount) {revert USER_INSUFFICIENT_TOKENA();}
+        if (IERC20(tokenAAddress).balanceOf(msg.sender)  < _amountPlusCharges) {revert USER_INSUFFICIENT_TOKENA();}
         if (IERC20(tokenBAddress).balanceOf(address(this)) < _amount) {revert TOKENB_LIQUIDITY_LOW();}
 
 
@@ -56,7 +56,8 @@ contract Swap {
         return _amount * chargesPercentage/100;
     }
 
-    function calculateSwapAmount(uint tokenType, uint256 _amount) private returns(uint256) {
-        if(tokenType==1)} 
+    function calculate(uint _tokenType, uint256 _amount) private returns(uint256) {
+        if (_tokenType==1) {return _amount * conversionRatio;}
+        if (_tokenType==2) {return _amount / conversionRatio;}
     }
 }
