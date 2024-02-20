@@ -8,7 +8,9 @@ contract Swap {
     address token2Address;
     event Swapped(address indexed _user, uint256 _amount);
 
-    error
+    error CONTRACTINSUFFICIENTTOKEN1();
+    error CONTRACTINSUFFICIENTTOKEN2();
+    
 
     constructor(addres _token1Address, address _token2Address){
         token1Address= _token1Address;
