@@ -18,6 +18,7 @@ contract Swap {
     error TOKENB_LIQUIDITY_LOW();
     error USER_INSUFFICIENT_TOKENA();
     error USER_INSUFFICIENT_TOKENB();
+    error SWAPPING_FAILED();
 
     constructor(address _tokenAAddress, address _tokenBAddress, uint256 _chargesPercentage, uint256 _conversionRatio){
         owner= msg.sender;
@@ -37,7 +38,7 @@ contract Swap {
         if (IERC20(tokenAAddress).balanceOf(msg.sender)  < _amountPlusCharges) {revert USER_INSUFFICIENT_TOKENA();}
         if (IERC20(tokenBAddress).balanceOf(address(this)) < _amountConverted) {revert TOKENB_LIQUIDITY_LOW();}
 
-        if(IERC20(tokenBAddress).transferFrom(msg.sender, _))
+        if(!IERC20(tokenBAddress).transferFrom(msg.sender, address(0), _amountConverted)) {revert SWAPPING_FAILED();}
     }
 
     function swapBforA(uint256 _amount) external returns(bool){
@@ -54,5 +55,9 @@ contract Swap {
 
     function calculateCharges(uint256 _amount) public view returns(uint256){
         return _amount * chargesPercentage/100;
+    }
+
+    function getContractBalance() view returns(uint256) {
+        
     }
 }
