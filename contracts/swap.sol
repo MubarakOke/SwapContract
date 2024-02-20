@@ -8,22 +8,24 @@ contract Swap {
     address tokenBAddress;
     event Swapped(address indexed _user, uint256 _amount);
 
-    error CONTRACTINSUFFICIENTTOKENA();
-    error CONTRACTINSUFFICIENTTOKENB();
-    error USERINSUFFICIENTTOKENA();
-    error USERINSUFFICIENTTOKENB();
+    error CONTRACTINSUFFICIENTTOKENA;
+    error CONTRACTINSUFFICIENTTOKENB;
+    error USERINSUFFICIENTTOKENA;
+    error USERINSUFFICIENTTOKENB;
 
-    constructor(addres _tokenAAddress, address _tokenBAddress){
-        token1Address= _tokenAAddress;
-        token2Address= _tokenBAddress;
+    constructor(address _tokenAAddress, address _tokenBAddress){
+        tokenAAddress= _tokenAAddress;
+        tokenBAddress= _tokenBAddress;
     }
 
-    function swapAforB(uint256 _amount ) returns(bool){
+    function swapAforB(uint256 _amount ) external returns(bool){
         require(msg.sender != address(0));
-        if(IERC20(tokenAAddress).balanceOf(msg.sender) > _amount) {revert USERINSUFFICIENTTOKENA();)
+        if (IERC20(tokenAAddress).balanceOf(msg.sender) < _amount) {revert USERINSUFFICIENTTOKENA()};
+        if (IERC20(tokenBAddress).balanceOf(address(this)) < _amount) {revert CONTRACTINSUFFICIENTTOKENB()}
+
     }
 
-    function swapBforA(uint256 _amount) returns(bool){
+    function swapBforA(uint256 _amount) external returns(bool){
 
     }
 }
