@@ -8,7 +8,7 @@ contract Swap {
     address tokenAAddress;
     address tokenBAddress;
     uint256 chargesPercentage;
-    uint256 conversion;
+    uint256 conversionRatio;
 
     event Swapped(address indexed _user, uint256 _amount);
 
@@ -19,10 +19,10 @@ contract Swap {
     error USER_INSUFFICIENT_TOKENA();
     error USER_INSUFFICIENT_TOKENB();
 
-    constructor(address _tokenAAddress, address _tokenBAddress, uint256 _chargesPercentage, uint256 _conversion){
+    constructor(address _tokenAAddress, address _tokenBAddress, uint256 _chargesPercentage, uint256 _conversionRatio){
         owner= msg.sender;
         chargesPercentage= _chargesPercentage;
-        conversion= _conversion;
+        conversionRatio= _conversionRatio;
         tokenAAddress= _tokenAAddress;
         tokenBAddress= _tokenBAddress;
     }
@@ -43,12 +43,12 @@ contract Swap {
 
     }
 
-    function update(uint256 _percentage) external {
+    function updateConversion(uint256 _conversion) external {
 
     }
 
-    function updateChargesPercentage(uint256 _percentage) external {
-
+    function updateChargesPercentage(uint256 _chargesPercentage) external {
+        chargesPercentage= _chargesPercentage;
     }
 
     function calculateCharges(uint256 _amount) public view returns(uint256){
