@@ -4,13 +4,14 @@ pragma solidity ^0.8.9;
 import './IERC20.sol';
 
 contract Swap {
-    address token1Address;
+    address tokenAddress;
     address token2Address;
     event Swapped(address indexed _user, uint256 _amount);
 
     error CONTRACTINSUFFICIENTTOKEN1();
     error CONTRACTINSUFFICIENTTOKEN2();
-    
+    error USERINSUFFICIENTTOKEN1();
+    error USERINSUFFICIENTTOKEN2();
 
     constructor(addres _token1Address, address _token2Address){
         token1Address= _token1Address;
@@ -19,7 +20,7 @@ contract Swap {
 
     function swapAforB(uint256 _amount ) returns(bool){
         require(msg.sender != address(0));
-        require(IERC20())
+        require(IERC20(TO))
     }
 
     function swapBforA(uint256 _amount) returns(bool){
