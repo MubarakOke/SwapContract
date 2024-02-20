@@ -12,6 +12,7 @@ contract Swap {
 
     event Swapped(address indexed _user, uint256 _amountSwappedTo);
 
+    error ONLY_OWNER();
     error ZERO_ACCOUNT_DETECTED();
     error ZERO_AMOUNT_DETECTED();
     error TOKENA_LIQUIDITY_LOW();
@@ -64,14 +65,20 @@ contract Swap {
     }
 
     function updateConversionRation(uint256 _conversionRatio) external {
+        onlyOwner();
         conversionRatio= _conversionRatio;
     }
 
     function updateChargesPercentage(uint256 _chargesPercentage) external {
+        onlyOwner();
         chargesPercentage= _chargesPercentage;
     }
 
     function calculateCharges(uint256 _amount) public view returns(uint256){
         return _amount * chargesPercentage/100;
+    }
+
+    function onlyOwner() private view {
+        if (msg.sender != owner) { revert ONLY_OWNER();}
     }
 }
