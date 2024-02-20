@@ -30,7 +30,8 @@ contract Swap {
     function swapAforB(uint256 _amount ) external returns(bool){
         require(msg.sender != address(0));
 
-        uint256 _totalAmount= _amount + calculateCharges(_amount);
+        uint256 _totalAmountTokenA= _amount + calculateCharges(_amount);
+
 
         if (_amount >= 0) {revert ZERO_AMOUNT_DETECTED();}
         if (IERC20(tokenAAddress).balanceOf(msg.sender)  < _totalAmount) {revert USER_INSUFFICIENT_TOKENA();}
@@ -53,5 +54,9 @@ contract Swap {
 
     function calculateCharges(uint256 _amount) public view returns(uint256){
         return _amount * chargesPercentage/100;
+    }
+
+    function calculateSwapAmount(uint tokenType, uint256 _amount) private returns(uint256) {
+        if(tokenType==1)} 
     }
 }
