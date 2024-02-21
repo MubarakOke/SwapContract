@@ -7,8 +7,9 @@ contract Swap {
     address owner;
     address tokenAAddress;
     address tokenBAddress;
-    uint256 chargesPercentage;
+    uint256 public chargesPercentage;
     uint256 conversionRatio;
+    uint256 defaultCharges;
 
     event Swapped(address indexed _user, uint256 _amountSwappedTo);
 
@@ -22,25 +23,25 @@ contract Swap {
     error SWAPPING_FAILED_USER();
     error SWAPPING_FAILED_CONTRACT();
 
-    constructor(address _tokenAAddress, address _tokenBAddress, uint256 _chargesPercentage, uint256 _conversionRatio){
+    constructor(address _tokenAAddress, address _tokenBAddress, uint256 _chargesPercentage, uint _defaultCharges){
         owner= msg.sender;
         chargesPercentage= _chargesPercentage;
-        conversionRatio= _conversionRatio;
         tokenAAddress= _tokenAAddress;
         tokenBAddress= _tokenBAddress;
+        defaultCharges= _defaultCharges;
     }
 
     function swapAforB(uint256 _amount ) external returns(bool){
         if (msg.sender == address(0)) { revert ZERO_ACCOUNT_DETECTED();}
 
         uint256 _amountPlusCharges= _amount + calculateCharges(_amount);
-        uint256 _amountConverted= _amount * conversionRatio;
+        uint256 _amountConverted= _amount;
 
         if (_amount <= 0) {revert ZERO_AMOUNT_DETECTED();}
         if (IERC20(tokenAAddress).balanceOf(msg.sender)  < _amountPlusCharges) {revert USER_INSUFFICIENT_TOKENA();}
         if (IERC20(tokenBAddress).balanceOf(address(this)) < _amountConverted) {revert TOKENB_LIQUIDITY_LOW();}
 
-        if(!IERC20(tokenAAddress).transferFrom(msg.sender, address(0), _amountPlusCharges)) {revert SWAPPING_FAILED_USER();}
+        if(!IERC20(tokenAAddress).transferFrom(msg.sender, address(this), _amountPlusCharges)) {revert SWAPPING_FAILED_USER();}
         if(!IERC20(tokenBAddress).transfer(msg.sender, _amountConverted)) {revert SWAPPING_FAILED_CONTRACT();}
 
         emit Swapped(msg.sender, _amountConverted);
@@ -51,23 +52,19 @@ contract Swap {
         if (msg.sender == address(0)) { revert ZERO_ACCOUNT_DETECTED();}
 
         uint256 _amountPlusCharges= _amount + calculateCharges(_amount);
-        uint256 _amountConverted= _amount / conversionRatio;
+        uint256 _amountConverted= _amount;
 
         if (_amount <= 0) {revert ZERO_AMOUNT_DETECTED();}
         if (IERC20(tokenBAddress).balanceOf(msg.sender)  < _amountPlusCharges) {revert USER_INSUFFICIENT_TOKENA();}
         if (IERC20(tokenAAddress).balanceOf(address(this)) < _amountConverted) {revert TOKENB_LIQUIDITY_LOW();}
 
-        if(!IERC20(tokenBAddress).transferFrom(msg.sender, address(0), _amountPlusCharges)) {revert SWAPPING_FAILED_USER();}
+        if(!IERC20(tokenBAddress).transferFrom(msg.sender, address(this), _amountPlusCharges)) {revert SWAPPING_FAILED_USER();}
         if(!IERC20(tokenAAddress).transfer(msg.sender, _amountConverted)) {revert SWAPPING_FAILED_CONTRACT();}
 
         emit Swapped(msg.sender, _amountConverted);
         return true;
     }
 
-    function updateConversionRation(uint256 _conversionRatio) external {
-        onlyOwner();
-        conversionRatio= _conversionRatio;
-    }
 
     function updateChargesPercentage(uint256 _chargesPercentage) external {
         onlyOwner();
@@ -75,7 +72,10 @@ contract Swap {
     }
 
     function calculateCharges(uint256 _amount) public view returns(uint256){
-        return _amount * chargesPercentage/100;
+        if (_amount < 100){
+            return defaultCharges;
+        }
+        return (_amount / 100) * chargesPercentage;
     }
 
     function onlyOwner() private view {
